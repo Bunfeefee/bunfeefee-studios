@@ -4,6 +4,19 @@ A small, responsive portfolio for **https://bunfeefee-studios.dev**.
 Plain HTML and CSS: no framework, JavaScript, tracking, external fonts,
 build step, or runtime dependencies. Only the `public` directory is deployed.
 
+## Production
+
+- Website: **https://bunfeefee-studios.dev**
+- Pages hostname: **https://bunfeefee-studios.pages.dev**
+- Repository: [Bunfeefee/bunfeefee-studios](https://github.com/Bunfeefee/bunfeefee-studios)
+- Cloudflare Pages project: `bunfeefee-studios`
+- Automatic deployments: pushes to `main`
+- Build command: `exit 0`; output directory: `public`; framework: None
+- Custom domain: apex CNAME to `bunfeefee-studios.pages.dev`, managed by Pages
+
+The initial deployment was verified over HTTPS on both hostnames, including
+matching HTML/CSS/assets, security headers, and the custom HTTP 404 response.
+
 ## Preview locally
 
 Open `public/index.html` in a browser for a quick preview, or use the included
@@ -26,7 +39,19 @@ email service is required. Choose **Pages**, not a Workers deployment.
 
 ### Recommended: GitHub-connected deployment
 
-1. Create an empty GitHub repository, for example `Bunfeefee/bunfeefee-studios`.
+The production project is already connected. To update it, edit the files,
+commit your changes, and push to `main`:
+
+```powershell
+Set-Location C:\Code\bunfeefee-studios
+git add public README.md
+git commit -m "Update studio website"
+git push
+```
+
+For a new setup or another copy of this site:
+
+1. Create an empty GitHub repository with your chosen name.
    Public or private is fine. Don't initialize it with a README.
 2. From this directory, initialize and push:
 
@@ -38,8 +63,8 @@ email service is required. Choose **Pages**, not a Workers deployment.
    git push -u origin main
    ```
 
-   Skip steps already performed. The repository name above is a suggestion,
-   not a repository that has already been created.
+   Substitute your repository URL if creating another copy. Skip steps
+   already performed; do not reinitialize the existing production repository.
 
 3. In the [Cloudflare dashboard](https://dash.cloudflare.com/), open
    **Workers & Pages > Create application > Pages** and select the option
@@ -95,6 +120,12 @@ point to the custom domain; they are not redirects.
 - Check an unknown path returns HTTP 404 and displays the custom error page.
 - Check `/robots.txt`, `/sitemap.xml`, and `/favicon.svg`.
 - On the live site, check HTTPS and the response headers from `public/_headers`.
+
+Cloudflare can inject its own Web Analytics beacon independently of the source
+files. The site's Content Security Policy intentionally blocks external scripts.
+If the browser reports a blocked `static.cloudflareinsights.com` beacon, disable
+Web Analytics/automatic beacon injection for this project or domain in Cloudflare
+rather than weakening the policy. The portfolio works without analytics.
 
 For example, on Windows:
 
