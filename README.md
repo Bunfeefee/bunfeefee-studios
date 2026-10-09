@@ -1,7 +1,7 @@
 # Bunfeefee Studios LLC
 
 A small, responsive portfolio for **https://bunfeefee-studios.dev**.
-Plain HTML and CSS: no framework, JavaScript, tracking, external fonts,
+Plain HTML and CSS with a small animation toggle script: no framework, tracking, external fonts,
 build step, or runtime dependencies. Only the `public` directory is deployed.
 
 ## Production
@@ -141,14 +141,52 @@ curl.exe -I https://bunfeefee-studios.dev/not-a-page
 - Browser icon: `public/favicon.svg`.
 - Response headers: `public/_headers`.
 
-The page describes the studio's business areas rather than reproducing LLC
-formation language. It does not claim shipped games, clients, or completed
-artwork. Add real project cards and screenshots when you're ready to feature
-specific work.
+The palette is purple-led, with a lavender background, blue highlights, and
+earthy brown/sage accents. Shared color tokens are defined in `:root` in
+`public/styles.css`; keep the favicon and HTML theme color in sync when changing
+the primary purple.
 
-Contact currently links to GitHub only; it isn't a contact form and does not
-send messages. Replace or supplement this with a `mailto:` link once a public
-email address is configured. Buying a domain does not itself create a mailbox.
+## Artwork
+
+Original PNG/GIF/MP4 artwork is preserved in `assets` outside the deployed
+directory. The hero features Macaroon Fee, and the gallery includes five
+illustrations, the Cake Stand animation, and the Bun Croissant video.
+Display titles are derived from the source filenames.
+WebP copies in `public/assets` preserve transparency and aspect ratios, use at
+most 960 pixels of width, and are checked to stay below 250 KB each. The hero
+loads eagerly; gallery images load lazily and link to the larger web copies.
+Cake Stand starts as a still; its accessible Play/Pause button opts into motion.
+Pausing restores the still, and switching to reduced-motion mode also stops it.
+Without JavaScript the still remains available. Bun Croissant uses native video
+controls, preloads metadata for a preview frame, and never autoplays. The CSP permits only local
+scripts and media; external embeds and analytics scripts remain blocked.
+
+To regenerate web copies after changing an original (Node.js 20.9+):
+
+```powershell
+Set-Location C:\Code\bunfeefee-studios
+npm ci
+npm run assets
+```
+
+Commit the generated `public/assets` files along with any source changes.
+Cloudflare still uses `exit 0` and deploys `public`; image processing is a local
+development step, not a runtime dependency or a required deployment build.
+
+The site uses cute, dry copy while keeping business descriptions factual.
+Game design is not advertised as a service. The creative-experiments card
+describes Stardew Valley modding, a contribution to a small Unity visual novel,
+and a simple Ren'Py game without implying a full-scale game-development practice.
+The Cloud Marks spotlight links to https://cloud-marks.com and describes Bingo,
+Scavenger Hunts, shared rooms, invite-based joining, and live updates. Upcoming
+app releases are mentioned without unconfirmed platforms, dates, or store links.
+The Twitch section links to https://twitch.tv/bunfeefee and says streams are
+primarily on Sundays, not a guaranteed weekly appointment. No third-party embeds
+are loaded.
+
+The contact button links to `mailto:bunfeefee@gmail.com` and opens the visitor's
+configured email application. It isn't a contact form and does not send messages
+directly. Project links still point to GitHub.
 
 ## Official deployment references
 

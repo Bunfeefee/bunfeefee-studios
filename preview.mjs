@@ -8,6 +8,9 @@ const types = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
   '.svg': 'image/svg+xml',
+  '.webp': 'image/webp',
+  '.mp4': 'video/mp4',
+  '.js': 'text/javascript; charset=utf-8',
   '.txt': 'text/plain; charset=utf-8',
   '.xml': 'application/xml; charset=utf-8',
 };
@@ -45,7 +48,32 @@ const server = createServer(async (request, response) => {
 
   try {
     const body = await readFile(path);
-    response.writeHead(200, { ...headers, 'Content-Type': types[extname(path)] ?? 'application/octet-stream' });
+    const fileHeaders = {
+      ...headers,
+      'Content-Type': types[extname(path)] ?? 'application/octet-stream',
+      'Accept-Ranges': 'bytes',
+    };
+    const range = request.headers.range;
+    if (range && request.method === 'GET') {
+      const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+      const suffix = match && !match[1] && match[2] ? Number(match[2]) : 0;
+      const start = match?.[1] ? Number(match[1]) : Math.max(0, body.length - suffix);
+      const end = match?.[1] && match[2] ? Math.min(Number(match[2]), body.length - 1) : body.length - 1;
+      if (!match || (!match[1] && !suffix) || !Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start > end || start >= body.length) {
+        console.warn('Unsatisfiable byte range:', range);
+        response.writeHead(416, { ...fileHeaders, 'Content-Range': `bytes */${body.length}` });
+        response.end('Range not satisfiable');
+        return;
+      }
+      response.writeHead(206, {
+        ...fileHeaders,
+        'Content-Range': `bytes ${start}-${end}/${body.length}`,
+        'Content-Length': end - start + 1,
+      });
+      response.end(body.subarray(start, end + 1));
+      return;
+    }
+    response.writeHead(200, { ...fileHeaders, 'Content-Length': body.length });
     response.end(request.method === 'HEAD' ? undefined : body);
   } catch (error) {
     if (error.code !== 'ENOENT' && error.code !== 'ENOTDIR' && error.code !== 'EISDIR') {
